@@ -8,21 +8,14 @@ BUILD_DIR=$1
 CACHE_DIR=$2
 ENV_DIR=$3
 
-mkdir -p $CACHE_DIR
+# Declare Variables
+LOGSTASH_VERSION =
+AWS_SDK_VERSION =
+SCRIPT_PATH = "/build.sh"
 
-LOGSTASH_URL=https://download.elastic.co/logstash/logstash/logstash-1.5.4.tar.gz
+OUTPUT=$("$SCRIPT_PATH")
+echo $OUTPUT
 
-
-if [[ -f "$CACHE_DIR/logstash-1.5.4.tar.gz" ]]; then
-    echo "Logstash package already detected in cache, skipping download."
-else
-    echo "Downloading Logstash into $CACHE_DIR ..."
-    curl --silent --location $LOGSTASH_URL -o $CACHE_DIR/logstash-1.4.2.tar.gz
-    echo "...done."
-fi
-
-echo "Unpacking Logstash..."
-tar -xzf $CACHE_DIR/logstash-1.4.2.tar.gz -C $BUILD_DIR
+echo "Setting sqs MD5 checks to false - workaround for issue on heroku sqs"
+sed -i "s/true,/false,/" $BUILD_DIR/$LOGSTASH_VERSION/vendor/bundle/jruby/1.9/gems/$AWS_SDK_VERSION/lib/aws/sqs/config.rb
 echo "...done."
-
-
